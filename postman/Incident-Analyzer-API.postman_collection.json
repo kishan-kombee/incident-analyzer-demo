@@ -1,0 +1,81 @@
+{
+  "info": {
+    "name": "Incident Analyzer API",
+    "description": "AI-Powered Incident & Root Cause Analyzer — POST /api/analyze with logs and metrics.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Analyze (success)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"logs\": [\n    \"12:00 DB timeout\",\n    \"12:01 DB timeout\",\n    \"12:02 DB connection reset\"\n  ],\n  \"metrics\": {\n    \"cpu\": 85,\n    \"db_latency\": 400,\n    \"requests_per_sec\": \"High\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/analyze",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Submit logs and metrics; returns likely_cause, confidence, next_steps, incident_id."
+      }
+    },
+    {
+      "name": "Analyze (minimal metrics)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"logs\": [\n    \"14:30 Connection refused\",\n    \"14:31 Connection refused\"\n  ],\n  \"metrics\": {}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/analyze",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Minimal payload: only required logs array; metrics can be empty."
+      }
+    },
+    {
+      "name": "Analyze (validation error - no logs)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"metrics\": {\n    \"cpu\": 50\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/analyze",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Expect 422: logs are required."
+      }
+    }
+  ]
+}
